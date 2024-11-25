@@ -1,14 +1,32 @@
-import { HomeIcon } from "lucide-react";
-import Index from "./pages/Index.jsx";
+import { HomeIcon, ArrowLeftRight, LogOut } from "lucide-react";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import ForgotPassword from "./pages/ForgotPassword";
+import Dashboard from "./pages/Dashboard";
 
-/**
- * Central place for defining the navigation items. Used for navigation components and routing.
- */
 export const navItems = [
   {
-    title: "Home",
+    title: "Login",
     to: "/",
     icon: <HomeIcon className="h-4 w-4" />,
-    page: <Index />,
+    page: <Login />,
+  },
+  {
+    title: "Register",
+    to: "/register",
+    icon: <ArrowLeftRight className="h-4 w-4" />,
+    page: <Register />,
+  },
+  {
+    title: "Forgot Password",
+    to: "/forgot-password",
+    icon: <LogOut className="h-4 w-4" />,
+    page: <ForgotPassword />,
+  },
+  {
+    title: "Dashboard",
+    to: "/dashboard",
+    icon: <HomeIcon className="h-4 w-4" />,
+    page: <Dashboard />,
   },
 ];
