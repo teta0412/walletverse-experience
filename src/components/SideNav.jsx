@@ -4,10 +4,13 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { LogOut } from "lucide-react";
 import { navItems } from "@/nav-items";
 import { toast } from "sonner";
+import { useState } from "react";
+import UserProfileDialog from "./UserProfileDialog";
 
 const SideNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const [showProfile, setShowProfile] = useState(false);
   
   const handleLogout = () => {
     toast.success("Logged out successfully");
@@ -19,7 +22,10 @@ const SideNav = () => {
   return (
     <div className="h-screen w-64 bg-card border-r flex flex-col">
       <div className="p-4 border-b">
-        <div className="flex items-center gap-3">
+        <div 
+          className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
+          onClick={() => setShowProfile(true)}
+        >
           <Avatar>
             <AvatarImage src="/placeholder.svg" />
             <AvatarFallback>NA</AvatarFallback>
@@ -57,6 +63,10 @@ const SideNav = () => {
           Logout
         </Button>
       </div>
+      <UserProfileDialog 
+        open={showProfile} 
+        onOpenChange={setShowProfile}
+      />
     </div>
   );
 };
