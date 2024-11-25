@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
@@ -8,6 +8,7 @@ import { toast } from "sonner";
 import { UserRound, Lock } from "lucide-react";
 
 const Login = () => {
+  const navigate = useNavigate();
   const [role, setRole] = useState("USER");
   const [loading, setLoading] = useState(false);
 
@@ -15,11 +16,17 @@ const Login = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate login
-    setTimeout(() => {
-      toast.success("Login successful!");
+    try {
+      // Simulate login
+      setTimeout(() => {
+        toast.success("Login successful!");
+        setLoading(false);
+        navigate("/dashboard");
+      }, 1000);
+    } catch (error) {
+      toast.error("Login failed!");
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (

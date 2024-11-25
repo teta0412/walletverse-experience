@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 
 const Register = () => {
+  const navigate = useNavigate();
   const [date, setDate] = useState();
   const [loading, setLoading] = useState(false);
 
@@ -18,11 +19,17 @@ const Register = () => {
     e.preventDefault();
     setLoading(true);
     
-    // Simulate registration
-    setTimeout(() => {
-      toast.success("Registration successful!");
+    try {
+      // Simulate registration
+      setTimeout(() => {
+        toast.success("Registration successful!");
+        setLoading(false);
+        navigate("/login");
+      }, 1000);
+    } catch (error) {
+      toast.error("Registration failed!");
       setLoading(false);
-    }, 1000);
+    }
   };
 
   return (
@@ -81,8 +88,8 @@ const Register = () => {
               <Input type="password" placeholder="Password" required />
             </div>
             <div className="flex justify-between items-center">
-              <Link to="/login" className="text-sm text-primary hover:underline">
-                Already have an account?
+              <Link to="/" className="text-sm text-primary hover:underline">
+                Already have an account? Login
               </Link>
             </div>
             <Button
