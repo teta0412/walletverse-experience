@@ -5,12 +5,16 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Plus } from "lucide-react";
 import SideNav from "@/components/SideNav";
+import CreateTransactionDialog from "@/components/CreateTransactionDialog";
+import { searchTransactions } from "@/services/transactionService";
+import { toast } from "sonner";
 
 const Transaction = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [wallet, setWallet] = useState("");
+  const [createDialogOpen, setCreateDialogOpen] = useState(false);
 
   const mockTransactions = [
     {
@@ -24,6 +28,25 @@ const Transaction = () => {
       status: "Complete",
     },
   ];
+
+  const handleSearch = async () => {
+    try {
+      console.log("Searching with filters:", { fromDate, toDate, transactionId, wallet });
+      const response = await searchTransactions({ fromDate, toDate, transactionId, wallet });
+      console.log("Search results:", response);
+      // TODO: Update transactions list when API is implemented
+    } catch (error) {
+      console.error("Search error:", error);
+      toast.error("Failed to search transactions");
+    }
+  };
+
+  const handleReset = () => {
+    setFromDate("");
+    setToDate("");
+    setTransactionId("");
+    setWallet("");
+  };
 
   return (
     <div className="flex">
@@ -53,7 +76,7 @@ const Transaction = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm mb-2 block">Từ ngày</label>
+                  <label className="text-sm mb-2 block">From Date</label>
                   <Input
                     type="date"
                     value={fromDate}
@@ -61,7 +84,7 @@ const Transaction = () => {
                   />
                 </div>
                 <div>
-                  <label className="text-sm mb-2 block">Đến ngày</label>
+                  <label className="text-sm mb-2 block">To Date</label>
                   <Input
                     type="date"
                     value={toDate}
@@ -71,13 +94,13 @@ const Transaction = () => {
               </div>
               <div className="flex justify-between items-center mb-6">
                 <div className="space-x-2">
-                  <Button variant="secondary">
+                  <Button variant="secondary" onClick={handleSearch}>
                     <Search className="h-4 w-4 mr-2" />
                     Search
                   </Button>
-                  <Button variant="outline">Reset</Button>
+                  <Button variant="outline" onClick={handleReset}>Reset</Button>
                 </div>
-                <Button>
+                <Button onClick={() => setCreateDialogOpen(true)}>
                   <Plus className="h-4 w-4 mr-2" />
                   Create
                 </Button>
@@ -116,6 +139,10 @@ const Transaction = () => {
           </Card>
         </div>
       </div>
+      <CreateTransactionDialog 
+        open={createDialogOpen} 
+        onOpenChange={setCreateDialogOpen}
+      />
     </div>
   );
 };
