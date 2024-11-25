@@ -1,9 +1,18 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Card, CardContent } from "@/components/ui/card";
-import { Mail, Phone, MapPin } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Mail, Phone, MapPin, Edit } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const UserProfileDialog = ({ open, onOpenChange }) => {
+  const navigate = useNavigate();
+
+  const handleEditProfile = () => {
+    onOpenChange(false);
+    navigate("/profile");
+  };
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
@@ -45,6 +54,10 @@ const UserProfileDialog = ({ open, onOpenChange }) => {
             </div>
           </CardContent>
         </Card>
+        <Button onClick={handleEditProfile} className="w-full">
+          <Edit className="h-4 w-4 mr-2" />
+          Edit Profile
+        </Button>
       </DialogContent>
     </Dialog>
   );
