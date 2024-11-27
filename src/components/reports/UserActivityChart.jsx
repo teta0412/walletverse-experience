@@ -3,9 +3,9 @@ import { Card } from "@/components/ui/card";
 
 const UserActivityChart = ({ data, timeFilter }) => {
   return (
-    <Card className="p-4 w-full">
-      <h2 className="text-lg font-semibold mb-4">User Activity</h2>
-      <div className="h-[300px] w-full">
+    <Card className="p-4 h-full">
+      <h2 className="text-lg font-semibold mb-2">User Activity</h2>
+      <div className="h-[200px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data}>
             <CartesianGrid strokeDasharray="3 3" />

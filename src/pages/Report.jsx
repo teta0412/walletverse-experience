@@ -96,9 +96,9 @@ const Report = () => {
   };
 
   return (
-    <div className="flex flex-col lg:flex-row min-h-screen">
+    <div className="flex min-h-screen">
       <SideNav />
-      <div className="flex-1 p-4 lg:p-8 bg-muted animate-fadeIn">
+      <div className="flex-1 ml-64 p-4 lg:p-8 bg-muted animate-fadeIn overflow-y-auto">
         <div className="max-w-7xl mx-auto space-y-6">
           <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="flex items-center gap-2">
@@ -107,7 +107,7 @@ const Report = () => {
             </div>
             <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
               <Select value={timeFilter} onValueChange={setTimeFilter}>
-                <SelectTrigger className="w-full sm:w-[180px] bg-white border-2 border-gray-200">
+                <SelectTrigger className="w-full sm:w-[180px] bg-white">
                   <SelectValue placeholder="Select time period" />
                 </SelectTrigger>
                 <SelectContent>
@@ -124,9 +124,13 @@ const Report = () => {
           
           <StatsCards stats={stats} />
           
-          <div className="space-y-6">
-            <RevenueChart data={filteredData} timeFilter={timeFilter} />
-            <UserActivityChart data={filteredData} timeFilter={timeFilter} />
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="h-[250px]">
+              <RevenueChart data={filteredData} timeFilter={timeFilter} />
+            </div>
+            <div className="h-[250px]">
+              <UserActivityChart data={filteredData} timeFilter={timeFilter} />
+            </div>
           </div>
           
           <RecentReportsList reports={recentReports} />

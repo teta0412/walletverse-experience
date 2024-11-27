@@ -20,7 +20,7 @@ const SideNav = () => {
   const navLinks = navItems.filter(item => item.showInNav);
 
   return (
-    <div className="h-screen w-64 bg-card border-r flex flex-col">
+    <div className="fixed h-screen w-64 bg-card border-r flex flex-col">
       <div className="p-4 border-b">
         <div 
           className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
@@ -36,7 +36,7 @@ const SideNav = () => {
           </div>
         </div>
       </div>
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-2">
           {navLinks.map((item) => (
             <li key={item.to}>
