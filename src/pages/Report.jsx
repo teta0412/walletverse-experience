@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
-import { FileText, Download, TrendingUp, Users, DollarSign, ArrowUpRight } from "lucide-react";
+import { FileText, Download } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import SideNav from "@/components/SideNav";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, ResponsiveContainer } from 'recharts';
+import RevenueChart from "@/components/reports/RevenueChart";
+import UserActivityChart from "@/components/reports/UserActivityChart";
+import StatsCards from "@/components/reports/StatsCards";
+import RecentReportsList from "@/components/reports/RecentReportsList";
 
 const Report = () => {
   const [timeFilter, setTimeFilter] = useState("year");
@@ -13,14 +15,12 @@ const Report = () => {
   
   console.log("Rendering Report page with filter:", timeFilter);
 
-  // Hardcoded data for a specific user (ID: 12345)
   const userData = {
     userId: "12345",
     name: "John Smith",
     email: "john.smith@example.com"
   };
 
-  // Hardcoded monthly data sets
   const yearData = [
     { month: "Jan", revenue: 45231, users: 2345 },
     { month: "Feb", revenue: 48000, users: 2400 },
@@ -39,7 +39,6 @@ const Report = () => {
   ];
 
   useEffect(() => {
-    // Filter data based on selected time period
     if (timeFilter === "month") {
       setFilteredData(monthData);
       toast.success("Showing monthly data");
@@ -123,75 +122,14 @@ const Report = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {stats.map((stat, index) => (
-              <Card key={index} className="p-4">
-                <div className="flex justify-between items-start">
-                  <h3 className="text-sm font-medium text-muted-foreground">{stat.title}</h3>
-                  <ArrowUpRight className="h-4 w-4 text-success" />
-                </div>
-                <div className="mt-2">
-                  <span className="text-2xl font-bold">{stat.value}</span>
-                  <span className="ml-2 text-sm text-success">
-                    {stat.change}
-                  </span>
-                </div>
-              </Card>
-            ))}
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card className="p-4">
-              <h2 className="text-lg font-semibold mb-4">Revenue Trend</h2>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={filteredData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey={timeFilter === "month" ? "day" : "month"} />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="revenue" stroke="#9b87f5" />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
-
-            <Card className="p-4">
-              <h2 className="text-lg font-semibold mb-4">User Activity</h2>
-              <div className="h-[300px] w-full">
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={filteredData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey={timeFilter === "month" ? "day" : "month"} />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Bar dataKey="users" fill="#34D399" />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            </Card>
+          <StatsCards stats={stats} />
+          
+          <div className="space-y-6">
+            <RevenueChart data={filteredData} timeFilter={timeFilter} />
+            <UserActivityChart data={filteredData} timeFilter={timeFilter} />
           </div>
           
-          <Card className="p-4">
-            <h2 className="text-lg font-semibold mb-4">Recent Reports</h2>
-            <div className="space-y-4">
-              {recentReports.map((report) => (
-                <div key={report.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 hover:bg-muted/50 rounded-md transition-colors">
-                  <div>
-                    <h3 className="font-medium">{report.name}</h3>
-                    <p className="text-sm text-muted-foreground">{report.date}</p>
-                  </div>
-                  <span className={`mt-2 sm:mt-0 px-2 py-1 rounded-full text-xs ${
-                    report.status === "Completed" ? "bg-success/20 text-success" : "bg-primary/20 text-primary"
-                  }`}>
-                    {report.status}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </Card>
+          <RecentReportsList reports={recentReports} />
         </div>
       </div>
     </div>
