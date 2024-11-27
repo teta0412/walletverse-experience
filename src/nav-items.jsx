@@ -1,9 +1,11 @@
-import { Home, Send, Bell, FileText, Receipt } from "lucide-react";
+import { Home, Send, Bell, FileText } from "lucide-react";
 import Dashboard from "./pages/Dashboard";
 import Transaction from "./pages/Transaction";
 import Profile from "./pages/Profile";
-import Notification from "./pages/Notification";
-import Report from "./pages/Report";
+
+// Lazy load the components to avoid circular dependencies
+const Notification = React.lazy(() => import("./pages/Notification"));
+const Report = React.lazy(() => import("./pages/Report"));
 
 export const navItems = [
   {
@@ -24,14 +26,14 @@ export const navItems = [
     title: "Notifications",
     icon: <Bell className="h-4 w-4 mr-2" />,
     to: "/notifications",
-    page: <Notification />,
+    page: <React.Suspense fallback={<div>Loading...</div>}><Notification /></React.Suspense>,
     showInNav: true,
   },
   {
     title: "Reports",
     icon: <FileText className="h-4 w-4 mr-2" />,
     to: "/reports",
-    page: <Report />,
+    page: <React.Suspense fallback={<div>Loading...</div>}><Report /></React.Suspense>,
     showInNav: true,
   },
   {
