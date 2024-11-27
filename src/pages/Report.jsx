@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Card } from "@/components/ui/card";
 import { toast } from "sonner";
 import SideNav from "@/components/SideNav";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar } from 'recharts';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, BarChart, Bar, ResponsiveContainer } from 'recharts';
 
 const Report = () => {
   const [timeFilter, setTimeFilter] = useState("year");
@@ -69,18 +69,18 @@ const Report = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex flex-col lg:flex-row min-h-screen">
       <SideNav />
-      <div className="flex-1 min-h-screen bg-muted p-4 lg:p-8 animate-fadeIn">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-6">
+      <div className="flex-1 p-4 lg:p-8 bg-muted animate-fadeIn">
+        <div className="max-w-7xl mx-auto space-y-6">
+          <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
             <div className="flex items-center gap-2">
               <FileText className="h-6 w-6" />
               <h1 className="text-2xl font-semibold">Reports</h1>
             </div>
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full sm:w-auto">
               <Select value={timeFilter} onValueChange={setTimeFilter}>
-                <SelectTrigger className="w-[180px]">
+                <SelectTrigger className="w-full sm:w-[180px]">
                   <SelectValue placeholder="Select time period" />
                 </SelectTrigger>
                 <SelectContent>
@@ -89,16 +89,16 @@ const Report = () => {
                   <SelectItem value="quarter">This Quarter</SelectItem>
                 </SelectContent>
               </Select>
-              <Button onClick={handleExport} className="flex items-center gap-2">
-                <Download className="h-4 w-4" />
+              <Button onClick={handleExport} className="w-full sm:w-auto">
+                <Download className="h-4 w-4 mr-2" />
                 Export
               </Button>
             </div>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {stats.map((stat, index) => (
-              <div key={index} className="glass-card p-4 rounded-lg">
+              <Card key={index} className="p-4">
                 <div className="flex justify-between items-start">
                   <h3 className="text-sm font-medium text-muted-foreground">{stat.title}</h3>
                   {stat.trend === "up" ? (
@@ -113,33 +113,41 @@ const Report = () => {
                     {stat.change}
                   </span>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <Card className="p-4">
               <h2 className="text-lg font-semibold mb-4">Revenue Trend</h2>
-              <LineChart width={500} height={300} data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Line type="monotone" dataKey="revenue" stroke="#9b87f5" />
-              </LineChart>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={monthlyData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Line type="monotone" dataKey="revenue" stroke="#9b87f5" />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
             </Card>
 
             <Card className="p-4">
               <h2 className="text-lg font-semibold mb-4">User Growth</h2>
-              <BarChart width={500} height={300} data={monthlyData}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="month" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="users" fill="#34D399" />
-              </BarChart>
+              <div className="h-[300px] w-full">
+                <ResponsiveContainer width="100%" height="100%">
+                  <BarChart data={monthlyData}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="month" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="users" fill="#34D399" />
+                  </BarChart>
+                </ResponsiveContainer>
+              </div>
             </Card>
           </div>
           
@@ -147,12 +155,12 @@ const Report = () => {
             <h2 className="text-lg font-semibold mb-4">Recent Reports</h2>
             <div className="space-y-4">
               {recentReports.map((report) => (
-                <div key={report.id} className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md transition-colors">
+                <div key={report.id} className="flex flex-col sm:flex-row sm:items-center justify-between p-2 hover:bg-muted/50 rounded-md transition-colors">
                   <div>
                     <h3 className="font-medium">{report.name}</h3>
                     <p className="text-sm text-muted-foreground">{report.date}</p>
                   </div>
-                  <span className={`px-2 py-1 rounded-full text-xs ${
+                  <span className={`mt-2 sm:mt-0 px-2 py-1 rounded-full text-xs ${
                     report.status === "Completed" ? "bg-success/20 text-success" : "bg-primary/20 text-primary"
                   }`}>
                     {report.status}
