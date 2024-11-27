@@ -5,9 +5,9 @@ import SideNav from "@/components/SideNav";
 
 const Dashboard = () => {
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <SideNav />
-      <div className="flex-1 min-h-screen bg-muted p-4 lg:p-8 animate-fadeIn">
+      <div className="flex-1 ml-64 p-4 lg:p-8 bg-muted animate-fadeIn overflow-y-auto">
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">

@@ -49,9 +49,9 @@ const Transaction = () => {
   };
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <SideNav />
-      <div className="flex-1 min-h-screen bg-muted p-4 lg:p-8">
+      <div className="flex-1 ml-64 p-4 lg:p-8 bg-muted animate-fadeIn overflow-y-auto">
         <div className="max-w-7xl mx-auto space-y-8">
           <Card className="glass-card">
             <CardHeader>
