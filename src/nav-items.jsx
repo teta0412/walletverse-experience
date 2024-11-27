@@ -1,3 +1,4 @@
+import React from "react";
 import { Home, Send, Bell, FileText } from "lucide-react";
 import Dashboard from "./pages/Dashboard";
 import Transaction from "./pages/Transaction";
