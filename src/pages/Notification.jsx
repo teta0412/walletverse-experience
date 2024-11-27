@@ -29,9 +29,9 @@ const Notification = () => {
   ];
   
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <SideNav />
-      <div className="flex-1 min-h-screen bg-muted p-4 lg:p-8 animate-fadeIn">
+      <div className="flex-1 ml-64 p-4 lg:p-8 bg-muted animate-fadeIn overflow-y-auto">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-2">
