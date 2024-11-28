@@ -4,6 +4,7 @@ import { ArrowDownUp, DollarSign, Users, Activity } from "lucide-react";
 import SideNav from "@/components/SideNav";
 
 const Dashboard = () => {
+  console.log(localStorage.getItem('csrfToken'));
   return (
     <div className="flex min-h-screen">
       <SideNav />

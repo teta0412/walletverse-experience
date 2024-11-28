@@ -6,6 +6,7 @@ import { navItems } from "@/nav-items";
 import { toast } from "sonner";
 import { useState } from "react";
 import UserProfileDialog from "./UserProfileDialog";
+import { authenticationService } from "@/services/authenticationService";
 
 const SideNav = () => {
   const navigate = useNavigate();
@@ -13,12 +14,12 @@ const SideNav = () => {
   const [showProfile, setShowProfile] = useState(false);
   
   const handleLogout = () => {
+    authenticationService.logout();
     toast.success("Logged out successfully");
-    navigate("/");
+    navigate("/login");
   };
 
   const navLinks = navItems.filter(item => item.showInNav);
-
   return (
     <div className="fixed h-screen w-64 bg-card border-r flex flex-col">
       <div className="p-4 border-b">

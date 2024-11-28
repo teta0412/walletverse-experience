@@ -9,25 +9,47 @@ import { format } from "date-fns";
 import { Calendar as CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
+import { authenticationService } from "@/services/authenticationService";
 
 const Register = () => {
   const navigate = useNavigate();
-  const [date, setDate] = useState();
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    dob: '',
+    phone: '',
+    address: '',
+    password: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleDateChange = (date) => {
+    setFormData({
+      ...formData,
+      dob: format(date, 'yyyy-MM-dd')
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      // Simulate registration
-      setTimeout(() => {
-        toast.success("Registration successful!");
-        setLoading(false);
-        navigate("/login");
-      }, 1000);
+      await authenticationService.register(formData);
+      toast.success("Registration successful! Please login.");
+      navigate("/login");
     } catch (error) {
-      toast.error("Registration failed!");
+      toast.error("Registration failed! Please try again.");
+      console.log(error);
+    } finally {
       setLoading(false);
     }
   };
@@ -45,14 +67,33 @@ const Register = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Input placeholder="First Name" required />
+                <Input 
+                  name="firstName"
+                  placeholder="First Name"
+                  required
+                  value={formData.firstName}
+                  onChange={handleChange}
+                />
               </div>
               <div className="space-y-2">
-                <Input placeholder="Last Name" required />
+                <Input
+                  name="lastName"
+                  placeholder="Last Name"
+                  required
+                  value={formData.lastName}
+                  onChange={handleChange}
+                />
               </div>
             </div>
             <div className="space-y-2">
-              <Input type="email" placeholder="Email" required />
+              <Input
+                name="email"
+                type="email"
+                placeholder="Email"
+                required
+                value={formData.email}
+                onChange={handleChange}
+              />
             </div>
             <div className="space-y-2">
               <Popover>
@@ -61,34 +102,54 @@ const Register = () => {
                     variant="outline"
                     className={cn(
                       "w-full justify-start text-left font-normal",
-                      !date && "text-muted-foreground"
+                      !formData.dob && "text-muted-foreground"
                     )}
                   >
                     <CalendarIcon className="mr-2 h-4 w-4" />
-                    {date ? format(date, "PPP") : <span>Date of birth</span>}
+                    {formData.dob ? formData.dob : <span>Date of birth</span>}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0" align="start">
                   <Calendar
                     mode="single"
-                    selected={date}
-                    onSelect={setDate}
+                    selected={formData.dob ? new Date(formData.dob) : undefined}
+                    onSelect={handleDateChange}
                     initialFocus
                   />
                 </PopoverContent>
               </Popover>
             </div>
             <div className="space-y-2">
-              <Input type="tel" placeholder="Phone Number" required />
+              <Input
+                name="phone"
+                type="tel"
+                placeholder="Phone Number"
+                required
+                value={formData.phone}
+                onChange={handleChange}
+              />
             </div>
             <div className="space-y-2">
-              <Input placeholder="Address" required />
+              <Input
+                name="address"
+                placeholder="Address"
+                required
+                value={formData.address}
+                onChange={handleChange}
+              />
             </div>
             <div className="space-y-2">
-              <Input type="password" placeholder="Password" required />
+              <Input
+                name="password"
+                type="password"
+                placeholder="Password"
+                required
+                value={formData.password}
+                onChange={handleChange}
+              />
             </div>
             <div className="flex justify-between items-center">
-              <Link to="/" className="text-sm text-primary hover:underline">
+              <Link to="/login" className="text-sm text-primary hover:underline">
                 Already have an account? Login
               </Link>
             </div>

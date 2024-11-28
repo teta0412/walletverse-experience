@@ -5,24 +5,34 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { UserRound, Lock } from "lucide-react";
+import { authenticationService } from "@/services/authenticationService";
 
 const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     
     try {
-      // Simulate login
-      setTimeout(() => {
-        toast.success("Login successful!");
-        setLoading(false);
-        navigate("/dashboard");
-      }, 1000);
+      await authenticationService.login(formData.email, formData.password);
+      toast.success("Login successful!");
+      navigate("/dashboard");
     } catch (error) {
-      toast.error("Login failed!");
+      toast.error("Login failed! Please check your credentials.");
+    } finally {
       setLoading(false);
     }
   };
@@ -42,10 +52,13 @@ const Login = () => {
               <div className="relative">
                 <UserRound className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                 <Input
+                  name="email"
                   placeholder="Email"
                   className="pl-10"
                   required
                   type="email"
+                  value={formData.email}
+                  onChange={handleChange}
                 />
               </div>
             </div>
@@ -53,10 +66,13 @@ const Login = () => {
               <div className="relative">
                 <Lock className="absolute left-3 top-2.5 h-5 w-5 text-muted-foreground" />
                 <Input
+                  name="password"
                   type="password"
                   placeholder="Password"
                   className="pl-10"
                   required
+                  value={formData.password}
+                  onChange={handleChange}
                 />
               </div>
             </div>
