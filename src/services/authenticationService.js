@@ -35,6 +35,8 @@ export const authenticationService = {
     localStorage.setItem('refreshToken', data.refreshToken);
     localStorage.setItem('tokenType', data.type);
     localStorage.setItem('csrfTokenExpiredTime', data.csrfTokenExpiredTime);
+    localStorage.setItem('userId', data.user_id)
+    localStorage.setItem('email', data.email)
     
     return data;
   },
@@ -60,5 +62,7 @@ export const authenticationService = {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('tokenType');
     localStorage.removeItem('csrfTokenExpiredTime');
+    localStorage.removeItem('userId', data.user_id)
+    localStorage.removeItem('email', data.email)
   }
 };
