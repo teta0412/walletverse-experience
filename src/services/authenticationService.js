@@ -1,10 +1,18 @@
-// src/services/auth.service.js
-const API_URL = "http://localhost:8081/api/v1/auth";
+const API_URL = "http://localhost:8080/api/v1/auth";
 
 export const authenticationService = {
   isAuthenticated() {
     const csrfToken = localStorage.getItem('csrfToken');
-    return csrfToken !== null;
+    const csrfTokenExpiredTime = localStorage.getItem('csrfTokenExpiredTime');
+    
+    if (!csrfToken || !csrfTokenExpiredTime) {
+      return false;
+    }
+
+    // Check if token is expired
+    const expiryTime = new Date(csrfTokenExpiredTime);
+    const currentTime = new Date();
+    return currentTime < expiryTime;
   },
 
   async login(email, password) {
@@ -22,13 +30,11 @@ export const authenticationService = {
     }
 
     const data = await response.json();
-    // Store tokens in localStorage
     localStorage.setItem('csrfToken', data.csrfToken);
     localStorage.setItem('refreshToken', data.refreshToken);
     localStorage.setItem('tokenType', data.type);
-    localStorage.setItem('userId', data.user_id)
-    localStorage.setItem('email', data.email)
-
+    localStorage.setItem('csrfTokenExpiredTime', data.csrfTokenExpiredTime);
+    
     return data;
   },
 
@@ -40,19 +46,18 @@ export const authenticationService = {
       },
       body: JSON.stringify(userData),
     });
-    if (response.ok === false) {
-      console.log("dmcode1", response.ok)
+    
+    if (!response.ok) {
       throw new Error('Registration failed');
     }
 
-    return await response;
+    return response;
   },
 
   logout() {
     localStorage.removeItem('csrfToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('tokenType');
-    localStorage.removeItem('userId', data.user_id)
-    localStorage.removeItem('email', data.email)
-  },
+    localStorage.removeItem('csrfTokenExpiredTime');
+  }
 };
