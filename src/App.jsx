@@ -25,7 +25,7 @@ const App = () => {
               path="/login"
               element={
                 isAuthenticated ? (
-                  <Navigate to="/" replace />
+                  <Navigate to="/dashboard" replace />
                 ) : (
                   <Login />
                 )
@@ -35,7 +35,7 @@ const App = () => {
               path="/register"
               element={
                 isAuthenticated ? (
-                  <Navigate to="/" replace />
+                  <Navigate to="/dashboard" replace />
                 ) : (
                   <Register />
                 )
@@ -52,7 +52,7 @@ const App = () => {
             ))}
 
             {/* Catch-all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/dashboard" replace />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

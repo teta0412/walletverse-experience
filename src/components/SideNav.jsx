@@ -7,17 +7,24 @@ import { toast } from "sonner";
 import { useState } from "react";
 import UserProfileDialog from "./UserProfileDialog";
 import { authenticationService } from "@/services/authenticationService";
+import { useUser } from "@/services/useUser";
 
 const SideNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showProfile, setShowProfile] = useState(false);
+  const { user, loading } = useUser();
   
   const handleLogout = () => {
     authenticationService.logout();
     toast.success("Logged out successfully");
     navigate("/login");
   };
+  if (loading) {
+    return <div className="flex min-h-screen items-center justify-center">
+      <p>Loading...</p>
+    </div>;
+  }
 
   const navLinks = navItems.filter(item => item.showInNav);
   return (
@@ -32,7 +39,7 @@ const SideNav = () => {
             <AvatarFallback>NA</AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-medium">Nguyen Van A</h3>
+            <h3 className="font-medium">{user?.firstName + ' ' + user?.lastName || "User"}</h3>
             <p className="text-sm text-muted-foreground">User</p>
           </div>
         </div>
