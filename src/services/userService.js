@@ -1,5 +1,7 @@
 // userService.js
 const API_BASE_URL = 'http://localhost:8082/api/v1/users';
+const csrfToken = localStorage.getItem('csrfToken');
+const tokenType = localStorage.getItem('tokenType');
 
 export const userService = {
   async getCurrentUser() {
@@ -11,7 +13,9 @@ export const userService = {
     const response = await fetch(`${API_BASE_URL}/${userId}`, {
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `${tokenType} ${csrfToken}`
       },
+      credentials: 'include'
     });
 
     if (!response.ok) {
@@ -23,11 +27,13 @@ export const userService = {
 
   async updateUser(userData) {
     const response = await fetch(`${API_BASE_URL}/update`, {
-      method: 'PUT',
+      method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
+        'Authorization': `${tokenType} ${csrfToken}`
       },
-      body: JSON.stringify(userData),
+      credentials: 'include',
+      body: JSON.stringify(userData)
     });
 
     if (!response.ok) {

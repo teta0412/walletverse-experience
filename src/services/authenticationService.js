@@ -4,16 +4,7 @@ const API_URL = "http://localhost:8081/api/v1/auth";
 export const authenticationService = {
   isAuthenticated() {
     const csrfToken = localStorage.getItem('csrfToken');
-    const csrfTokenExpiredTime = localStorage.getItem('csrfTokenExpiredTime');
-    
-    if (!csrfToken || !csrfTokenExpiredTime) {
-      return false;
-    }
-
-    // Check if token is expired
-    const expiryTime = new Date(csrfTokenExpiredTime);
-    const currentTime = new Date();
-    return currentTime < expiryTime;
+    return csrfToken !== null;
   },
 
   async login(email, password) {
@@ -22,6 +13,7 @@ export const authenticationService = {
       headers: {
         'Content-Type': 'application/json',
       },
+      credentials: 'include',
       body: JSON.stringify({ email, password }),
     });
 
@@ -34,10 +26,9 @@ export const authenticationService = {
     localStorage.setItem('csrfToken', data.csrfToken);
     localStorage.setItem('refreshToken', data.refreshToken);
     localStorage.setItem('tokenType', data.type);
-    localStorage.setItem('csrfTokenExpiredTime', data.csrfTokenExpiredTime);
     localStorage.setItem('userId', data.user_id)
     localStorage.setItem('email', data.email)
-    
+
     return data;
   },
 
@@ -61,8 +52,7 @@ export const authenticationService = {
     localStorage.removeItem('csrfToken');
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('tokenType');
-    localStorage.removeItem('csrfTokenExpiredTime');
     localStorage.removeItem('userId', data.user_id)
     localStorage.removeItem('email', data.email)
-  }
+  },
 };
