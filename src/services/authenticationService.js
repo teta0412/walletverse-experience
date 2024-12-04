@@ -1,4 +1,3 @@
-// src/services/auth.service.js
 const API_URL = "http://localhost:8080/api/v1/auth";
 
 export const authenticationService = {
@@ -10,7 +9,6 @@ export const authenticationService = {
       return false;
     }
 
-    // Check if token is expired
     const expiryTime = new Date(csrfTokenExpiredTime);
     const currentTime = new Date();
     return currentTime < expiryTime;
@@ -30,11 +28,11 @@ export const authenticationService = {
     }
 
     const data = await response.json();
-    // Store tokens in localStorage
     localStorage.setItem('csrfToken', data.csrfToken);
     localStorage.setItem('refreshToken', data.refreshToken);
     localStorage.setItem('tokenType', data.type);
     localStorage.setItem('csrfTokenExpiredTime', data.csrfTokenExpiredTime);
+    localStorage.setItem('userInfo', JSON.stringify(data.user));
     
     return data;
   },
@@ -47,12 +45,12 @@ export const authenticationService = {
       },
       body: JSON.stringify(userData),
     });
-    if (response.ok === false) {
-      console.log("dmcode1", response.ok)
+    
+    if (!response.ok) {
       throw new Error('Registration failed');
     }
 
-    return await response;
+    return response;
   },
 
   logout() {
@@ -60,5 +58,6 @@ export const authenticationService = {
     localStorage.removeItem('refreshToken');
     localStorage.removeItem('tokenType');
     localStorage.removeItem('csrfTokenExpiredTime');
+    localStorage.removeItem('userInfo');
   }
 };

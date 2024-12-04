@@ -10,6 +10,7 @@ import { Calendar as CalendarIcon, Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
 import { authenticationService } from "@/services/authenticationService";
+import { DatePicker } from "@/components/ui/date-picker";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -97,31 +98,11 @@ const Register = () => {
               />
             </div>
             <div className="space-y-2">
-              <Popover>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal bg-white",
-                      !formData.dob && "text-muted-foreground"
-                    )}
-                  >
-                    <CalendarIcon className="mr-2 h-4 w-4" />
-                    {formData.dob ? formData.dob : <span>Date of birth</span>}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-white" align="start">
-                  <Calendar
-                    mode="single"
-                    selected={formData.dob ? new Date(formData.dob) : undefined}
-                    onSelect={handleDateChange}
-                    initialFocus
-                    captionLayout="dropdown-buttons"
-                    fromYear={1900}
-                    toYear={new Date().getFullYear()}
-                  />
-                </PopoverContent>
-              </Popover>
+              <DatePicker
+                date={formData.dob ? new Date(formData.dob) : undefined}
+                onDateChange={(date) => handleDateChange(date)}
+                className="w-full"
+              />
             </div>
             <div className="space-y-2">
               <Input
