@@ -29,8 +29,10 @@ const Login = () => {
     
     try {
       await authenticationService.login(formData.email, formData.password);
-      toast.success("Login successful!");
-      navigate("/dashboard");
+      if (authenticationService.isAuthenticated()){
+        toast.success("Login successful!");
+        navigate("/dashboard");
+      }else toast.error("Retry later...");
     } catch (error) {
       toast.error("Login failed! Please check your credentials.");
     } finally {

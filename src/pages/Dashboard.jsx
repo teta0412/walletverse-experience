@@ -2,11 +2,10 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowDownUp, DollarSign, Users, Activity } from "lucide-react";
 import SideNav from "@/components/SideNav";
-import { useUser } from "@/hooks/useUser";
+import { useDashboard } from "@/hooks/useDashboard";
 
 const Dashboard = () => {
-  const { user, loading } = useUser();
-
+  const { dashboard, loading } = useDashboard();
   if (loading) {
     return <div className="flex min-h-screen items-center justify-center">
       <p>Loading...</p>
@@ -20,12 +19,11 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src={user?.avatarUrl || "/placeholder.svg"} />
-              <AvatarFallback>{user?.name?.charAt(0) || "U"}</AvatarFallback>
+              <AvatarFallback>{dashboard?.name?.charAt(0) || "U"}</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold">Welcome, {user?.firstName + ' ' + user?.lastName || "User"}</h1>
-              <p className="text-muted-foreground">{user?.email}</p>
+              <h1 className="text-2xl font-bold">Welcome, {dashboard?.firstName + ' ' + dashboard?.lastName || "User"}</h1>
+              <p className="text-muted-foreground">{dashboard?.email}</p>
             </div>
           </div>
 
@@ -38,7 +36,7 @@ const Dashboard = () => {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">${user.data?.balance}</div>
+                <div className="text-2xl font-bold">${dashboard?.data.balance}</div>
                 <p className="text-xs text-muted-foreground">
                   +20.1% from last month
                 </p>

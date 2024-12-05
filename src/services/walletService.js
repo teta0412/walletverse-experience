@@ -16,7 +16,7 @@ export const walletService = {
     if (!response.ok) {
       throw new Error('Failed to fetch wallet data');
     }
-
-    return response.json();
+    const data = await response.json()
+    return data;
   },
 };
