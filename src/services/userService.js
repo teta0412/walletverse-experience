@@ -5,12 +5,12 @@ const tokenType = localStorage.getItem('tokenType');
 
 export const userService = {
   async getCurrentUser() {
-    const userId = localStorage.getItem('userId');
-    if (!userId) {
-      throw new Error('No user ID found');
-    }
+    // const userId = localStorage.getItem('userId');
+    // if (!userId) {
+    //   throw new Error('No user ID found');
+    // }
     
-    const response = await fetch(`${API_BASE_URL}/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/me`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `${tokenType} ${csrfToken}`
@@ -21,6 +21,8 @@ export const userService = {
     if (!response.ok) {
       throw new Error('Failed to fetch user data');
     }
+    console.log(response)
+    localStorage.setItem('userId',response.json.id)
 
     return response.json();
   },
@@ -35,7 +37,7 @@ export const userService = {
       credentials: 'include',
       body: JSON.stringify(userData)
     });
-
+    console.log(response.text)
     if (!response.ok) {
       throw new Error('Failed to update user data');
     }

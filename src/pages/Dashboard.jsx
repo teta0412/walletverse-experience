@@ -12,7 +12,7 @@ const Dashboard = () => {
       <p>Loading...</p>
     </div>;
   }
-  console.log(user)
+  // console.log(user)
   return (
     <div className="flex min-h-screen">
       <SideNav />
