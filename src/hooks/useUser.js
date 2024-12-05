@@ -2,7 +2,7 @@
 // useUser.js
 import { useState, useEffect } from 'react';
 import { toast } from 'sonner';
-import { userService } from './userService';
+import { userService } from '../services/userService';
 
 export const useUser = () => {
   const [user, setUser] = useState(null);

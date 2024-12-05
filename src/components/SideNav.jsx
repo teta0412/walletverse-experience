@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useState } from "react";
 import UserProfileDialog from "./UserProfileDialog";
 import { authenticationService } from "@/services/authenticationService";
-import { useUser } from "@/services/useUser";
+import { useUser } from "@/hooks/useUser";
 
 const SideNav = () => {
   const navigate = useNavigate();

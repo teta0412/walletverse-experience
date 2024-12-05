@@ -4,7 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Mail, Phone, MapPin, Edit, Calendar, Loader2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { useUser } from '../services/useUser';
+import { useUser } from '../hooks/useUser';
 
 const UserProfileDialog = ({ open, onOpenChange }) => {
   const navigate = useNavigate();

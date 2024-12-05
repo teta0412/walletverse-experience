@@ -10,10 +10,6 @@ export const authenticationService = {
       return false;
     }
     // Check if token is expired
-    const currentTime = new Date();
-    const expiryTime = new Date();
-    expiryTime.setSeconds(expiryTime.getSeconds() + 3600); // Add 3600 seconds (1 hour)
-    return currentTime < expiryTime;
   },
 
   async login(email, password) {

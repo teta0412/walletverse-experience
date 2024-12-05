@@ -2,7 +2,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowDownUp, DollarSign, Users, Activity } from "lucide-react";
 import SideNav from "@/components/SideNav";
-import { useUser } from "@/services/useUser";
+import { useUser } from "@/hooks/useUser";
 
 const Dashboard = () => {
   const { user, loading } = useUser();
