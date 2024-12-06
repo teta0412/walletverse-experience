@@ -10,7 +10,7 @@ const OTPVerification = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [otp, setOtp] = useState("");
-  const [timeLeft, setTimeLeft] = useState(180); // 3 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(localStorage.getItem('otpDuration')); // 10 minutes in seconds
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -58,7 +58,7 @@ const OTPVerification = () => {
 
   const handleResendOTP = async () => {
     if (timeLeft > 0) return;
-    
+
     try {
       await authenticationService.resendOTP(location.state.email);
       setTimeLeft(180);
@@ -77,7 +77,7 @@ const OTPVerification = () => {
             Enter the 6-digit code sent to {location.state?.email}
           </CardDescription>
         </CardHeader>
-        <CardContent>
+        <CardContent className="flex flex-col items-center">
           <div className="space-y-4">
             <InputOTP
               value={otp}

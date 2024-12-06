@@ -44,7 +44,7 @@ export const validateEmail = (email) => {
     
     if (isNaN(dobDate.getTime())) return "Invalid date format";
     if (dobDate > today) return "Date of birth cannot be in the future";
-    if (age < 13) return "Must be at least 13 years old";
+    if (age < 1) return "Must be at least 1 years old";
     if (age > 120) return "Invalid date of birth";
     return "";
   };

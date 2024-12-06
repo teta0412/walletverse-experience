@@ -8,7 +8,7 @@ export const authenticationService = {
     if (!csrfToken || !csrfTokenExpiredTime) {
       return false;
     }
-    
+
     // Check if token is expired
     const now = new Date().getTime();
     return now < parseInt(csrfTokenExpiredTime);
@@ -27,21 +27,21 @@ export const authenticationService = {
       });
 
       if (!response.ok) {
-        const error = await response.text();
-        throw new Error(error || "Login failed");
+        const error = await response.json();
+        throw new Error(error.message || "Login failed");
+      } else {
+        const data = await response.json();
+
+        // Store tokens and expiration
+        localStorage.setItem("csrfToken", data.csrfToken);
+        localStorage.setItem("refreshToken", data.refreshToken);
+        localStorage.setItem("tokenType", data.type);
+        // Set expiration time in milliseconds
+        const expirationTime = new Date().getTime() + (data.csrfTokenDuration);
+        localStorage.setItem("csrfTokenExpiredTime", expirationTime.toString() * 1000);
+
+        return data;
       }
-
-      const data = await response.json();
-      
-      // Store tokens and expiration
-      localStorage.setItem("csrfToken", data.csrfToken);
-      localStorage.setItem("refreshToken", data.refreshToken);
-      localStorage.setItem("tokenType", data.type);
-      // Set expiration time in milliseconds
-      const expirationTime = new Date().getTime() + (data.csrfTokenDuration);
-      localStorage.setItem("csrfTokenExpiredTime", expirationTime.toString()*1000);
-
-      return data;
     } catch (error) {
       console.error("Login error:", error);
       throw error;
@@ -95,18 +95,25 @@ export const authenticationService = {
       const error = await response.text();
       throw new Error(error || "Registration failed");
     }
-
-    return response;
+    const data = await response.json();
+    localStorage.setItem("email", data.email);
+    localStorage.setItem("transactionId", data.transactionId);
+    localStorage.setItem("otpDuration", data.duration);
+    return data;
   },
 
   async verifyOTP(email, otp) {
-    const response = await fetch(`${API_URL}/verify-otp`, {
+    const transactionId = localStorage.getItem("transactionId");
+    if (!transactionId) {
+      throw new Error("No transaction id for otp available");
+    }
+    const response = await fetch(`${API_URL}/register/verify`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         "Accept": "application/json"
       },
-      body: JSON.stringify({ email, otp }),
+      body: JSON.stringify({ email, otp, transactionId }),
     });
 
     if (!response.ok) {
@@ -118,7 +125,7 @@ export const authenticationService = {
   },
 
   async resendOTP(email) {
-    const response = await fetch(`${API_URL}/resend-otp`, {
+    const response = await fetch(`${API_URL}/new-otp`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
