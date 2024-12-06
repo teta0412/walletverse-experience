@@ -6,6 +6,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Loader2 } from "lucide-react";
 import SideNav from "@/components/SideNav";
 import { useUser } from '../hooks/useUser';
+import { validateName, validatePhone, validateAddress, validateDob } from '../config/validation';
 
 const Profile = () => {
   const { user, loading, error, updateUser } = useUser();
@@ -13,6 +14,14 @@ const Profile = () => {
     firstName: "",
     lastName: "",
     email: "",
+    phoneNumber: "",
+    dateOfBirth: "",
+    address: ""
+  });
+
+  const [errors, setErrors] = useState({
+    firstName: "",
+    lastName: "",
     phoneNumber: "",
     dateOfBirth: "",
     address: ""
@@ -30,12 +39,49 @@ const Profile = () => {
     }
   }, [user]);
 
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'firstName':
+        return validateName(value, 'First name');
+      case 'lastName':
+        return validateName(value, 'Last name');
+      case 'phoneNumber':
+        return validatePhone(value);
+      case 'dateOfBirth':
+        return validateDob(value);
+      case 'address':
+        return validateAddress(value);
+      default:
+        return '';
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    let isValid = true;
+
+    Object.keys(formData).forEach(field => {
+      const error = validateField(field, formData[field]);
+      if (error) {
+        newErrors[field] = error;
+        isValid = false;
+      }
+    });
+
+    setErrors(newErrors);
+    return isValid;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      return;
+    }
+
     try {
       await updateUser(formData);
     } catch (error) {
-      // Error is handled by the hook
       console.error("Failed to update profile:", error);
     }
   };
@@ -45,6 +91,21 @@ const Profile = () => {
     setFormData(prev => ({
       ...prev,
       [name]: value
+    }));
+
+    // Clear error when user starts typing
+    setErrors(prev => ({
+      ...prev,
+      [name]: ""
+    }));
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    setErrors(prev => ({
+      ...prev,
+      [name]: error
     }));
   };
 
@@ -61,7 +122,7 @@ const Profile = () => {
       <div className="flex min-h-screen items-center justify-center">
         <Card className="w-96">
           <CardContent className="p-6">
-            <p className="text-center text-error">{error}</p>
+            <p className="text-center text-red-500">{error}</p>
             <Button onClick={() => window.location.reload()} className="mt-4 w-full">
               Retry
             </Button>
@@ -74,7 +135,7 @@ const Profile = () => {
   return (
     <div className="flex min-h-screen">
       <SideNav />
-      <div className="flex-1 p-8 overflow-y-auto">
+      <div className="flex-1 ml-64 p-4 lg:p-8 bg-muted animate-fadeIn overflow-y-auto">
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader>
@@ -98,8 +159,13 @@ const Profile = () => {
                       name="firstName"
                       value={formData.firstName}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       required
+                      className={errors.firstName ? "border-red-500" : ""}
                     />
+                    {errors.firstName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.firstName}</p>
+                    )}
                   </div>
 
                   <div className="space-y-2">
@@ -108,8 +174,13 @@ const Profile = () => {
                       name="lastName"
                       value={formData.lastName}
                       onChange={handleChange}
+                      onBlur={handleBlur}
                       required
+                      className={errors.lastName ? "border-red-500" : ""}
                     />
+                    {errors.lastName && (
+                      <p className="text-red-500 text-sm mt-1">{errors.lastName}</p>
+                    )}
                   </div>
                 </div>
 
@@ -120,7 +191,12 @@ const Profile = () => {
                     type="date"
                     value={formData.dateOfBirth}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={errors.dateOfBirth ? "border-red-500" : ""}
                   />
+                  {errors.dateOfBirth && (
+                    <p className="text-red-500 text-sm mt-1">{errors.dateOfBirth}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -129,7 +205,12 @@ const Profile = () => {
                     name="phoneNumber"
                     value={formData.phoneNumber}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={errors.phoneNumber ? "border-red-500" : ""}
                   />
+                  {errors.phoneNumber && (
+                    <p className="text-red-500 text-sm mt-1">{errors.phoneNumber}</p>
+                  )}
                 </div>
 
                 <div className="space-y-2">
@@ -138,10 +219,19 @@ const Profile = () => {
                     name="address"
                     value={formData.address}
                     onChange={handleChange}
+                    onBlur={handleBlur}
+                    className={errors.address ? "border-red-500" : ""}
                   />
+                  {errors.address && (
+                    <p className="text-red-500 text-sm mt-1">{errors.address}</p>
+                  )}
                 </div>
 
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button 
+                  type="submit" 
+                  className="w-full" 
+                  disabled={loading || Object.keys(errors).some(key => errors[key])}
+                >
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />

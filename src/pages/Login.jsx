@@ -5,7 +5,8 @@ import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { toast } from "sonner";
 import { UserRound, Lock, Eye, EyeOff } from "lucide-react";
-import { authenticationService } from "@/services/authenticationService";
+import { authenticationService } from "@/services/authenticationService"
+import { validateEmail, validatePassword } from "@/config/validation";
 
 const Login = () => {
   const navigate = useNavigate();
@@ -15,16 +16,61 @@ const Login = () => {
     email: '',
     password: ''
   });
+  const [errors, setErrors] = useState({
+    email: '',
+    password: ''
+  });
+
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'email':
+        return validateEmail(value);
+      case 'password':
+        return validatePassword(value);
+      default:
+        return '';
+    }
+  };
 
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    // Clear error when user starts typing
+    setErrors(prev => ({
+      ...prev,
+      [name]: ''
+    }));
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    setErrors(prev => ({
+      ...prev,
+      [name]: error
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {
+      email: validateField('email', formData.email),
+      password: validateField('password', formData.password)
+    };
+    setErrors(newErrors);
+    return !Object.values(newErrors).some(error => error !== '');
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    
+    if (!validateForm()) {
+      toast.error("Please fix the errors in the form");
+      return;
+    }
+
     setLoading(true);
     
     try {
@@ -32,7 +78,9 @@ const Login = () => {
       if (authenticationService.isAuthenticated()){
         toast.success("Login successful!");
         navigate("/dashboard");
-      }else toast.error("Retry later...");
+      } else {
+        toast.error("Retry later...");
+      }
     } catch (error) {
       toast.error("Login failed! Please check your credentials.");
     } finally {
@@ -57,13 +105,17 @@ const Login = () => {
                 <Input
                   name="email"
                   placeholder="Email"
-                  className="pl-10"
+                  className={`pl-10 ${errors.email ? 'border-red-500' : ''}`}
                   required
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
               </div>
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1">{errors.email}</p>
+              )}
             </div>
             <div className="space-y-2">
               <div className="relative">
@@ -72,10 +124,11 @@ const Login = () => {
                   name="password"
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
-                  className="pl-10 pr-10"
+                  className={`pl-10 pr-10 ${errors.password ? 'border-red-500' : ''}`}
                   required
                   value={formData.password}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <button
                   type="button"
@@ -85,6 +138,9 @@ const Login = () => {
                   {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-sm text-red-500 mt-1">{errors.password}</p>
+              )}
             </div>
             <div className="flex items-center justify-between">
               <Link

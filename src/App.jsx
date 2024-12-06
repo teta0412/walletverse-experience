@@ -8,6 +8,7 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import React from "react";
 import { authenticationService } from "./services/authenticationService";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const queryClient = new QueryClient();
 
@@ -40,6 +41,10 @@ const App = () => {
                   <Register />
                 )
               }
+            />
+            <Route 
+              path="/forgot-password"
+              element={<ForgotPassword/>}
             />
 
             {/* Protected routes */}

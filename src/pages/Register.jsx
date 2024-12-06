@@ -8,12 +8,22 @@ import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
 import { authenticationService } from "@/services/authenticationService";
 import { DatePicker } from "@/components/ui/date-picker";
+import {
+  validateEmail,
+  validatePassword,
+  validateName,
+  validatePhone,
+  validateAddress,
+  validateDob,
+  validateConfirmPassword
+} from "../config/validation";
 
 const Register = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -25,39 +35,96 @@ const Register = () => {
     confirmPassword: ''
   });
 
+  const validateField = (name, value) => {
+    switch (name) {
+      case 'firstName':
+        return validateName(value, 'First name');
+      case 'lastName':
+        return validateName(value, 'Last name');
+      case 'email':
+        return validateEmail(value);
+      case 'phone':
+        return validatePhone(value);
+      case 'address':
+        return validateAddress(value);
+      case 'password':
+        return validatePassword(value);
+      case 'confirmPassword':
+        return validateConfirmPassword(formData.password, value);
+      case 'dob':
+        return validateDob(value);
+      default:
+        return '';
+    }
+  };
+
   const handleChange = (e) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
-    });
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error when user starts typing
+    setErrors(prev => ({
+      ...prev,
+      [name]: ''
+    }));
+  };
+
+  const handleBlur = (e) => {
+    const { name, value } = e.target;
+    const error = validateField(name, value);
+    setErrors(prev => ({
+      ...prev,
+      [name]: error
+    }));
   };
 
   const handleDateChange = (date) => {
-    setFormData({
-      ...formData,
-      dob: format(date, 'yyyy-MM-dd')
+    const formattedDate = format(date, 'yyyy-MM-dd');
+    setFormData(prev => ({
+      ...prev,
+      dob: formattedDate
+    }));
+    
+    const error = validateDob(formattedDate);
+    setErrors(prev => ({
+      ...prev,
+      dob: error
+    }));
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    Object.keys(formData).forEach(field => {
+      const error = validateField(field, formData[field]);
+      if (error) {
+        newErrors[field] = error;
+      }
     });
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match!");
+    if (!validateForm()) {
+      toast.error("Please fix the errors in the form");
       return;
     }
 
     setLoading(true);
     
     try {
-      // Remove confirmPassword before sending to API
       const { confirmPassword, ...registrationData } = formData;
       await authenticationService.register(registrationData);
       toast.success("Registration successful! Please login.");
       navigate("/login");
     } catch (error) {
       toast.error("Registration failed! Please try again.");
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -82,7 +149,12 @@ const Register = () => {
                   required
                   value={formData.firstName}
                   onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={errors.firstName ? "border-red-500" : ""}
                 />
+                {errors.firstName && (
+                  <p className="text-sm text-red-500">{errors.firstName}</p>
+                )}
               </div>
               <div className="space-y-2">
                 <Input
@@ -91,9 +163,15 @@ const Register = () => {
                   required
                   value={formData.lastName}
                   onChange={handleChange}
+                  onBlur={handleBlur}
+                  className={errors.lastName ? "border-red-500" : ""}
                 />
+                {errors.lastName && (
+                  <p className="text-sm text-red-500">{errors.lastName}</p>
+                )}
               </div>
             </div>
+            
             <div className="space-y-2">
               <Input
                 name="email"
@@ -102,15 +180,25 @@ const Register = () => {
                 required
                 value={formData.email}
                 onChange={handleChange}
+                onBlur={handleBlur}
+                className={errors.email ? "border-red-500" : ""}
               />
+              {errors.email && (
+                <p className="text-sm text-red-500">{errors.email}</p>
+              )}
             </div>
+
             <div className="space-y-2">
               <DatePicker
                 date={formData.dob ? new Date(formData.dob) : undefined}
-                onDateChange={(date) => handleDateChange(date)}
-                className="w-full"
+                onDateChange={handleDateChange}
+                className={`w-full ${errors.dob ? "border-red-500" : ""}`}
               />
+              {errors.dob && (
+                <p className="text-sm text-red-500">{errors.dob}</p>
+              )}
             </div>
+
             <div className="space-y-2">
               <Input
                 name="phone"
@@ -119,8 +207,14 @@ const Register = () => {
                 required
                 value={formData.phone}
                 onChange={handleChange}
+                onBlur={handleBlur}
+                className={errors.phone ? "border-red-500" : ""}
               />
+              {errors.phone && (
+                <p className="text-sm text-red-500">{errors.phone}</p>
+              )}
             </div>
+
             <div className="space-y-2">
               <Input
                 name="address"
@@ -128,8 +222,14 @@ const Register = () => {
                 required
                 value={formData.address}
                 onChange={handleChange}
+                onBlur={handleBlur}
+                className={errors.address ? "border-red-500" : ""}
               />
+              {errors.address && (
+                <p className="text-sm text-red-500">{errors.address}</p>
+              )}
             </div>
+
             <div className="space-y-2">
               <div className="relative">
                 <Input
@@ -137,9 +237,10 @@ const Register = () => {
                   type={showPassword ? "text" : "password"}
                   placeholder="Password"
                   required
-                  className="pr-10"
+                  className={`pr-10 ${errors.password ? "border-red-500" : ""}`}
                   value={formData.password}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <button
                   type="button"
@@ -149,7 +250,11 @@ const Register = () => {
                   {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                 </button>
               </div>
+              {errors.password && (
+                <p className="text-sm text-red-500">{errors.password}</p>
+              )}
             </div>
+
             <div className="space-y-2">
               <div className="relative">
                 <Input
@@ -157,9 +262,10 @@ const Register = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm Password"
                   required
-                  className="pr-10"
+                  className={`pr-10 ${errors.confirmPassword ? "border-red-500" : ""}`}
                   value={formData.confirmPassword}
                   onChange={handleChange}
+                  onBlur={handleBlur}
                 />
                 <button
                   type="button"
@@ -169,12 +275,17 @@ const Register = () => {
                   {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
                 </button>
               </div>
+              {errors.confirmPassword && (
+                <p className="text-sm text-red-500">{errors.confirmPassword}</p>
+              )}
             </div>
+
             <div className="flex justify-between items-center">
               <Link to="/login" className="text-sm text-primary hover:underline">
                 Already have an account? Login
               </Link>
             </div>
+
             <Button
               type="submit"
               className="w-full"
