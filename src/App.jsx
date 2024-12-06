@@ -8,6 +8,7 @@ import Login from "@/pages/Login";
 import Register from "@/pages/Register";
 import React from "react";
 import { authenticationService } from "./services/authenticationService";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const queryClient = new QueryClient();
 
@@ -25,7 +26,7 @@ const App = () => {
               path="/login"
               element={
                 isAuthenticated ? (
-                  <Navigate to="/" replace />
+                  <Navigate to="/dashboard" replace />
                 ) : (
                   <Login />
                 )
@@ -35,11 +36,15 @@ const App = () => {
               path="/register"
               element={
                 isAuthenticated ? (
-                  <Navigate to="/" replace />
+                  <Navigate to="/dashboard" replace />
                 ) : (
                   <Register />
                 )
               }
+            />
+            <Route 
+              path="/forgot-password"
+              element={<ForgotPassword/>}
             />
 
             {/* Protected routes */}
@@ -52,7 +57,7 @@ const App = () => {
             ))}
 
             {/* Catch-all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>

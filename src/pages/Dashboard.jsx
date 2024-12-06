@@ -2,9 +2,16 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowDownUp, DollarSign, Users, Activity } from "lucide-react";
 import SideNav from "@/components/SideNav";
+import { useDashboard } from "@/hooks/useDashboard";
 
 const Dashboard = () => {
-  console.log(localStorage.getItem('csrfToken'));
+  const { dashboard, loading } = useDashboard();
+  if (loading) {
+    return <div className="flex min-h-screen items-center justify-center">
+      <p>Loading...</p>
+    </div>;
+  }
+  // console.log(user)
   return (
     <div className="flex min-h-screen">
       <SideNav />
@@ -12,12 +19,11 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback>NA</AvatarFallback>
+              <AvatarFallback>{dashboard?.name?.charAt(0) || "U"}</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold">Welcome, Nguyen Van A</h1>
-              <p className="text-muted-foreground">Here's your wallet overview</p>
+              <h1 className="text-2xl font-bold">Welcome, {dashboard?.firstName + ' ' + dashboard?.lastName || "User"}</h1>
+              <p className="text-muted-foreground">{dashboard?.email}</p>
             </div>
           </div>
 
@@ -30,7 +36,7 @@ const Dashboard = () => {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">$45,231.89</div>
+                <div className="text-2xl font-bold">${dashboard?.data.balance}</div>
                 <p className="text-xs text-muted-foreground">
                   +20.1% from last month
                 </p>
