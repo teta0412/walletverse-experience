@@ -110,8 +110,8 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    if (!validateForm()) {
-      toast.error("Please fix the errors in the form");
+    if (formData.password !== formData.confirmPassword) {
+      toast.error("Passwords do not match!");
       return;
     }
 
@@ -120,8 +120,8 @@ const Register = () => {
     try {
       const { confirmPassword, ...registrationData } = formData;
       await authenticationService.register(registrationData);
-      toast.success("Registration successful! Please login.");
-      navigate("/login");
+      toast.success("Registration successful! Please verify your email.");
+      navigate("/verify-otp", { state: { email: formData.email } });
     } catch (error) {
       toast.error("Registration failed! Please try again.");
       console.error(error);

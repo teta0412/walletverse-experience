@@ -1,4 +1,3 @@
-// src/services/auth.service.js
 const API_URL = "http://localhost:8081/api/v1/auth";
 
 export const authenticationService = {
@@ -100,8 +99,43 @@ export const authenticationService = {
     return response;
   },
 
+  async verifyOTP(email, otp) {
+    const response = await fetch(`${API_URL}/verify-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({ email, otp }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error || "OTP verification failed");
+    }
+
+    return response.json();
+  },
+
+  async resendOTP(email) {
+    const response = await fetch(`${API_URL}/resend-otp`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    if (!response.ok) {
+      const error = await response.text();
+      throw new Error(error || "Failed to resend OTP");
+    }
+
+    return response.json();
+  },
+
   logout() {
     localStorage.clear();
-    // Optional: Call logout endpoint to invalidate server-side session
   },
 };

@@ -6,6 +6,7 @@ import { navItems } from "./nav-items";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import OTPVerification from "@/pages/OTPVerification";
 import React from "react";
 import { authenticationService } from "./services/authenticationService";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -39,6 +40,16 @@ const App = () => {
                   <Navigate to="/dashboard" replace />
                 ) : (
                   <Register />
+                )
+              }
+            />
+            <Route
+              path="/verify-otp"
+              element={
+                isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <OTPVerification />
                 )
               }
             />
