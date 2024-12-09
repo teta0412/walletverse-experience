@@ -1,34 +1,38 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogFooter,
+} from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useState } from "react";
-import { createTransaction } from "@/services/transactionService";
+import { useTransaction } from "@/hooks/useTransaction";
 import { toast } from "sonner";
 
 const CreateTransactionDialog = ({ open, onOpenChange }) => {
-  const [loading, setLoading] = useState(false);
+  const { createTransaction, loading } = useTransaction();
   const [formData, setFormData] = useState({
-    toUser: "",
-    toWallet: "",
+    toWalletId: "",
     amount: "",
     description: "",
   });
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     try {
-      console.log("Submitting transaction:", formData);
-      const response = await createTransaction(formData);
-      console.log("Transaction created:", response);
-      toast.success("Transaction created successfully");
-      onOpenChange(false);
+      if (formData.toWalletId === localStorage.getItem("walletId")) {
+        toast.error("Can't transfer to your own wallet");
+        throw error;
+      } else {
+        await createTransaction(formData);
+        onOpenChange(false);
+      }
     } catch (error) {
-      console.error("Error creating transaction:", error);
-      toast.error("Failed to create transaction");
-    } finally {
-      setLoading(false);
+      // Error handling is now managed by the hook
+      console.error("Error in form submission:", error);
     }
   };
 
@@ -47,19 +51,10 @@ const CreateTransactionDialog = ({ open, onOpenChange }) => {
         </DialogHeader>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm mb-2 block">To User</label>
-            <Input
-              name="toUser"
-              value={formData.toUser}
-              onChange={handleChange}
-              placeholder="Enter recipient name"
-            />
-          </div>
-          <div>
             <label className="text-sm mb-2 block">To Wallet</label>
             <Input
-              name="toWallet"
-              value={formData.toWallet}
+              name="toWalletId"
+              value={formData.toWalletId}
               onChange={handleChange}
               placeholder="Enter recipient wallet"
             />

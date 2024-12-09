@@ -17,6 +17,7 @@ export const walletService = {
       throw new Error('Failed to fetch wallet data');
     }
     const data = await response.json()
+    localStorage.setItem('walletId', data.data.walletId)
     return data;
   },
 };

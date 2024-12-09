@@ -5,6 +5,7 @@ import { userService } from '../services/userService';
 import { walletService } from '@/services/walletService';
 import { authenticationService } from '@/services/authenticationService';
 import { useNavigate } from 'react-router-dom';
+import { transactionService } from '@/services/transactionService';
 
 export const useDashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -24,10 +25,12 @@ export const useDashboard = () => {
 
       const userData = await userService.getCurrentUser();
       const walletData = await walletService.getWalletInfo(userData.id);
+      const transactionData = await transactionService.getTransactionStatistics()
       
       const dashboardData = {
         ...userData,
-        ...walletData
+        ...walletData,
+        ...transactionData,
       };
       
       setDashboard(dashboardData);

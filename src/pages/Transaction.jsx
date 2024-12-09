@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Search, Plus } from "lucide-react";
 import SideNav from "@/components/SideNav";
 import CreateTransactionDialog from "@/components/CreateTransactionDialog";
-import { searchTransactions } from "@/services/transactionService";
+import { searchTransactions, transactionService } from "@/services/transactionService";
 import { toast } from "sonner";
+import { useTransaction } from "@/hooks/useTransaction";
 
 const Transaction = () => {
   const [fromDate, setFromDate] = useState("");
@@ -15,13 +16,18 @@ const Transaction = () => {
   const [transactionId, setTransactionId] = useState("");
   const [wallet, setWallet] = useState("");
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
+  const { transaction, loading } = useTransaction();
+  if (loading) {
+    return <div className="flex min-h-screen items-center justify-center">
+      <p>Loading...</p>
+    </div>;
+  }
 
   const mockTransactions = [
     {
       id: 1,
       uuid: "0x0xxx0xxx0xxxx0xx",
       fromWallet: "1111111111",
-      toUser: "Tran Van B",
       toWallet: "2222222222",
       amount: "10,000,000",
       description: "Chuyen tien nha",
@@ -112,7 +118,6 @@ const Transaction = () => {
                       <TableHead>STT</TableHead>
                       <TableHead>Transaction UUID</TableHead>
                       <TableHead>From Wallet</TableHead>
-                      <TableHead>To User</TableHead>
                       <TableHead>To Wallet</TableHead>
                       <TableHead>Amount</TableHead>
                       <TableHead>Description</TableHead>
@@ -120,16 +125,15 @@ const Transaction = () => {
                     </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {mockTransactions.map((transaction) => (
+                    {transaction.data.map((transaction) => (
                       <TableRow key={transaction.id}>
                         <TableCell>{transaction.id}</TableCell>
                         <TableCell className="font-mono">{transaction.uuid}</TableCell>
-                        <TableCell>{transaction.fromWallet}</TableCell>
-                        <TableCell>{transaction.toUser}</TableCell>
-                        <TableCell>{transaction.toWallet}</TableCell>
+                        <TableCell>{transaction.fromWalletId}</TableCell>
+                        <TableCell>{transaction.toWalletId}</TableCell>
                         <TableCell>{transaction.amount}</TableCell>
                         <TableCell>{transaction.description}</TableCell>
-                        <TableCell>{transaction.status}</TableCell>
+                        <TableCell>{transaction.transactionStatus}</TableCell>
                       </TableRow>
                     ))}
                   </TableBody>
