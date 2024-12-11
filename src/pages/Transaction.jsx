@@ -23,18 +23,6 @@ const Transaction = () => {
     </div>;
   }
 
-  const mockTransactions = [
-    {
-      id: 1,
-      uuid: "0x0xxx0xxx0xxxx0xx",
-      fromWallet: "1111111111",
-      toWallet: "2222222222",
-      amount: "10,000,000",
-      description: "Chuyen tien nha",
-      status: "Complete",
-    },
-  ];
-
   const handleSearch = async () => {
     try {
       console.log("Searching with filters:", { fromDate, toDate, transactionId, wallet });
@@ -124,7 +112,7 @@ const Transaction = () => {
                       <TableHead>Status</TableHead>
                     </TableRow>
                   </TableHeader>
-                  <TableBody>
+                  <TableBody> 
                     {transaction.data.map((transaction) => (
                       <TableRow key={transaction.id}>
                         <TableCell>{transaction.id}</TableCell>

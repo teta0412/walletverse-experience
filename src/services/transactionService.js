@@ -18,7 +18,7 @@ const tokenType = localStorage.getItem('tokenType');
 const ownWalletId = localStorage.getItem('walletId');
 
 export const transactionService = {
-  async getTransactionHistory() {
+  async getTransactionHistory(page) {
     const response = await fetch(`${API_BASE_URL}/history/${ownWalletId}`, {
       headers: {
         'Content-Type': 'application/json',
