@@ -19,7 +19,7 @@ const ownWalletId = localStorage.getItem('walletId');
 
 export const transactionService = {
   async getTransactionHistory() {
-    const response = await fetch(`${API_BASE_URL}/history`, {
+    const response = await fetch(`${API_BASE_URL}/history/${ownWalletId}`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `${tokenType} ${csrfToken}`
@@ -73,7 +73,7 @@ export const transactionService = {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to fetch transaction data');
+      console.error('Failed to fetch transaction data');
     }
     const data = await response.json()
     return data.data;

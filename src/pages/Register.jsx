@@ -2,7 +2,13 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { format } from "date-fns";
 import { Eye, EyeOff } from "lucide-react";
 import { toast } from "sonner";
@@ -15,8 +21,9 @@ import {
   validatePhone,
   validateAddress,
   validateDob,
-  validateConfirmPassword
+  validateConfirmPassword,
 } from "../config/validation";
+import BirthDatePicker from "@/components/BirthDatePicker";
 
 const Register = () => {
   const navigate = useNavigate();
@@ -25,79 +32,79 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    dob: '',
-    phone: '',
-    address: '',
-    password: '',
-    confirmPassword: ''
+    firstName: "",
+    lastName: "",
+    email: "",
+    dob: "",
+    phone: "",
+    address: "",
+    password: "",
+    confirmPassword: "",
   });
 
   const validateField = (name, value) => {
     switch (name) {
-      case 'firstName':
-        return validateName(value, 'First name');
-      case 'lastName':
-        return validateName(value, 'Last name');
-      case 'email':
+      case "firstName":
+        return validateName(value, "First name");
+      case "lastName":
+        return validateName(value, "Last name");
+      case "email":
         return validateEmail(value);
-      case 'phone':
+      case "phone":
         return validatePhone(value);
-      case 'address':
+      case "address":
         return validateAddress(value);
-      case 'password':
+      case "password":
         return validatePassword(value);
-      case 'confirmPassword':
+      case "confirmPassword":
         return validateConfirmPassword(formData.password, value);
-      case 'dob':
+      case "dob":
         return validateDob(value);
       default:
-        return '';
+        return "";
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
-    
+
     // Clear error when user starts typing
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [name]: ''
+      [name]: "",
     }));
   };
 
   const handleBlur = (e) => {
     const { name, value } = e.target;
     const error = validateField(name, value);
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      [name]: error
+      [name]: error,
     }));
   };
 
   const handleDateChange = (date) => {
-    const formattedDate = format(date, 'yyyy-MM-dd');
-    setFormData(prev => ({
+    const formattedDate = format(date, "yyyy-MM-dd");
+    setFormData((prev) => ({
       ...prev,
-      dob: formattedDate
+      dob: formattedDate,
     }));
-    
+
     const error = validateDob(formattedDate);
-    setErrors(prev => ({
+    setErrors((prev) => ({
       ...prev,
-      dob: error
+      dob: error,
     }));
   };
 
   const validateForm = () => {
     const newErrors = {};
-    Object.keys(formData).forEach(field => {
+    Object.keys(formData).forEach((field) => {
       const error = validateField(field, formData[field]);
       if (error) {
         newErrors[field] = error;
@@ -109,14 +116,14 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (formData.password !== formData.confirmPassword) {
       toast.error("Passwords do not match!");
       return;
     }
 
     setLoading(true);
-    
+
     try {
       const { confirmPassword, ...registrationData } = formData;
       await authenticationService.register(registrationData);
@@ -134,7 +141,9 @@ const Register = () => {
     <div className="min-h-screen flex items-center justify-center bg-muted p-4">
       <Card className="w-full max-w-lg animate-fadeIn glass-card">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Create an account</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">
+            Create an account
+          </CardTitle>
           <CardDescription className="text-center">
             Enter your information to create your account
           </CardDescription>
@@ -143,7 +152,7 @@ const Register = () => {
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Input 
+                <Input
                   name="firstName"
                   placeholder="First Name"
                   required
@@ -171,7 +180,7 @@ const Register = () => {
                 )}
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Input
                 name="email"
@@ -189,10 +198,10 @@ const Register = () => {
             </div>
 
             <div className="space-y-2">
-              <DatePicker
+              <BirthDatePicker
                 date={formData.dob ? new Date(formData.dob) : undefined}
                 onDateChange={handleDateChange}
-                className={`w-full ${errors.dob ? "border-red-500" : ""}`}
+                className={errors.dob ? "border-red-500" : ""}
               />
               {errors.dob && (
                 <p className="text-sm text-red-500">{errors.dob}</p>
@@ -247,7 +256,11 @@ const Register = () => {
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
                 >
-                  {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                  {showPassword ? (
+                    <Eye className="h-5 w-5" />
+                  ) : (
+                    <EyeOff className="h-5 w-5" />
+                  )}
                 </button>
               </div>
               {errors.password && (
@@ -262,7 +275,9 @@ const Register = () => {
                   type={showConfirmPassword ? "text" : "password"}
                   placeholder="Confirm Password"
                   required
-                  className={`pr-10 ${errors.confirmPassword ? "border-red-500" : ""}`}
+                  className={`pr-10 ${
+                    errors.confirmPassword ? "border-red-500" : ""
+                  }`}
                   value={formData.confirmPassword}
                   onChange={handleChange}
                   onBlur={handleBlur}
@@ -272,7 +287,11 @@ const Register = () => {
                   onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                   className="absolute right-3 top-2.5 text-muted-foreground hover:text-foreground"
                 >
-                  {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
+                  {showConfirmPassword ? (
+                    <Eye className="h-5 w-5" />
+                  ) : (
+                    <EyeOff className="h-5 w-5" />
+                  )}
                 </button>
               </div>
               {errors.confirmPassword && (
@@ -281,16 +300,15 @@ const Register = () => {
             </div>
 
             <div className="flex justify-between items-center">
-              <Link to="/login" className="text-sm text-primary hover:underline">
+              <Link
+                to="/login"
+                className="text-sm text-primary hover:underline"
+              >
                 Already have an account? Login
               </Link>
             </div>
 
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={loading}
-            >
+            <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Creating account..." : "Register"}
             </Button>
           </form>

@@ -15,6 +15,7 @@ import { toast } from "sonner";
 const CreateTransactionDialog = ({ open, onOpenChange }) => {
   const { createTransaction, loading } = useTransaction();
   const [formData, setFormData] = useState({
+    fromWalletId:localStorage.getItem("walletId"),
     toWalletId: "",
     amount: "",
     description: "",

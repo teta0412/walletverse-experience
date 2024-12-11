@@ -20,8 +20,8 @@ const Dashboard = () => {
       <p>Loading...</p>
     </div>;
   }
-  const recentSend = dashboard.sentTransactions;
-  const recentReceived = dashboard.receivedTransactions;
+  const recentSend = dashboard?.sentTransactions || [];
+  const recentReceived = dashboard?.receivedTransactions || [];
   console.log(recentSend)
   console.log(recentReceived);
   return (
@@ -62,7 +62,7 @@ const Dashboard = () => {
                 <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+${dashboard?.weeklyDeposits || 'Error'}</div>
+                <div className="text-2xl font-bold">+${dashboard?.weeklyDeposits || 0}</div>
                 {/* <p className="text-xs text-muted-foreground">
                   +19% from last week
                 </p> */}
@@ -76,7 +76,7 @@ const Dashboard = () => {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">-${dashboard?.weeklyWithdrawals || 'Error'}</div>
+                <div className="text-2xl font-bold">-${dashboard?.weeklyWithdrawals || 0}</div>
                 {/* <p className="text-xs text-muted-foreground">
                   -4% from last week
                 </p> */}
@@ -90,7 +90,7 @@ const Dashboard = () => {
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{dashboard?.totalTransactions || 'Error'}</div>
+                <div className="text-2xl font-bold">{dashboard?.totalTransactions || 0}</div>
                 {/* <p className="text-xs text-muted-foreground">
                   +7% from last month
                 </p> */}
