@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
@@ -8,27 +8,41 @@ import SideNav from "@/components/SideNav";
 import CreateTransactionDialog from "@/components/CreateTransactionDialog";
 import { searchTransactions, transactionService } from "@/services/transactionService";
 import { toast } from "sonner";
-import { useTransaction } from "@/hooks/useTransaction";
 
 const Transaction = () => {
   const [fromDate, setFromDate] = useState("");
   const [toDate, setToDate] = useState("");
   const [transactionId, setTransactionId] = useState("");
   const [wallet, setWallet] = useState("");
+  const [transactions, setTransactions] = useState([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
   const [createDialogOpen, setCreateDialogOpen] = useState(false);
-  const { transaction, loading } = useTransaction();
-  if (loading) {
-    return <div className="flex min-h-screen items-center justify-center">
-      <p>Loading...</p>
-    </div>;
-  }
+
+  useEffect(() => {
+    fetchTransactions(currentPage - 1);
+  }, [currentPage]);
+
+  const fetchTransactions = async (page) => {
+    setLoading(true);
+    try {
+      const response = await transactionService.getTransactionHistory(page);
+      setTransactions(response.data);
+      setTotalPages(response.totalPages); // Assuming API returns total pages
+    } catch (error) {
+      toast.error("Failed to fetch transactions");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleSearch = async () => {
     try {
       console.log("Searching with filters:", { fromDate, toDate, transactionId, wallet });
       const response = await searchTransactions({ fromDate, toDate, transactionId, wallet });
-      console.log("Search results:", response);
-      // TODO: Update transactions list when API is implemented
+      setTransactions(response.data);
+      // Assuming API returns filtered results without pagination
     } catch (error) {
       console.error("Search error:", error);
       toast.error("Failed to search transactions");
@@ -40,6 +54,7 @@ const Transaction = () => {
     setToDate("");
     setTransactionId("");
     setWallet("");
+    fetchTransactions(1);
   };
 
   return (
@@ -99,40 +114,59 @@ const Transaction = () => {
                   Create
                 </Button>
               </div>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>STT</TableHead>
-                      <TableHead>Transaction UUID</TableHead>
-                      <TableHead>From Wallet</TableHead>
-                      <TableHead>To Wallet</TableHead>
-                      <TableHead>Amount</TableHead>
-                      <TableHead>Description</TableHead>
-                      <TableHead>Status</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody> 
-                    {transaction.data.map((transaction) => (
-                      <TableRow key={transaction.id}>
-                        <TableCell>{transaction.id}</TableCell>
-                        <TableCell className="font-mono">{transaction.uuid}</TableCell>
-                        <TableCell>{transaction.fromWalletId}</TableCell>
-                        <TableCell>{transaction.toWalletId}</TableCell>
-                        <TableCell>{transaction.amount}</TableCell>
-                        <TableCell>{transaction.description}</TableCell>
-                        <TableCell>{transaction.transactionStatus}</TableCell>
+              {loading ? (
+                <div className="text-center">Loading...</div>
+              ) : (
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>STT</TableHead>
+                        <TableHead>Transaction UUID</TableHead>
+                        <TableHead>From Wallet</TableHead>
+                        <TableHead>To Wallet</TableHead>
+                        <TableHead>Amount</TableHead>
+                        <TableHead>Description</TableHead>
+                        <TableHead>Status</TableHead>
                       </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+                    </TableHeader>
+                    <TableBody>
+                      {transactions.map((transaction, index) => (
+                        <TableRow key={transaction.id}>
+                          <TableCell>{(currentPage - 1) * 10 + index + 1}</TableCell>
+                          <TableCell className="font-mono">{transaction.uuid}</TableCell>
+                          <TableCell>{transaction.fromWalletId}</TableCell>
+                          <TableCell>{transaction.toWalletId}</TableCell>
+                          <TableCell>{transaction.amount}</TableCell>
+                          <TableCell>{transaction.description}</TableCell>
+                          <TableCell>{transaction.transactionStatus}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  <div className="flex justify-between p-4">
+                    <Button
+                      disabled={currentPage === 1}
+                      onClick={() => setCurrentPage(currentPage - 1)}
+                    >
+                      Previous
+                    </Button>
+                    <span>Page {currentPage} of {totalPages}</span>
+                    <Button
+                      disabled={currentPage === totalPages}
+                      onClick={() => setCurrentPage(currentPage + 1)}
+                    >
+                      Next
+                    </Button>
+                  </div>
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>
       </div>
-      <CreateTransactionDialog 
-        open={createDialogOpen} 
+      <CreateTransactionDialog
+        open={createDialogOpen}
         onOpenChange={setCreateDialogOpen}
       />
     </div>
