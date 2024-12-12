@@ -15,11 +15,10 @@ export const searchTransactions = async (filters) => {
 const API_BASE_URL = 'http://localhost:8084/api/v1/transactions';
 const csrfToken = localStorage.getItem('csrfToken');
 const tokenType = localStorage.getItem('tokenType');
-const ownWalletId = localStorage.getItem('walletId');
 
 export const transactionService = {
   async getTransactionHistory(page) {
-    const response = await fetch(`${API_BASE_URL}/history/${ownWalletId}?page=${page}`, {
+    const response = await fetch(`${API_BASE_URL}/history/${localStorage.getItem('walletId')}?page=${page}`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `${tokenType} ${csrfToken}`
@@ -64,7 +63,7 @@ export const transactionService = {
     }
   },
   async getTransactionStatistics() {
-    const response = await fetch(`${API_BASE_URL}/stat/${ownWalletId}`, {
+    const response = await fetch(`${API_BASE_URL}/stat/${localStorage.getItem('walletId')}`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `${tokenType} ${csrfToken}`

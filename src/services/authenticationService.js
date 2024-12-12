@@ -1,6 +1,18 @@
 const API_URL = "http://localhost:8081/api/v1/auth";
 
 export const authenticationService = {
+  async setup(data) {
+    return new Promise((resolve) => {
+      // Store tokens and expiration
+      localStorage.setItem("csrfToken", data.csrfToken);
+      localStorage.setItem("refreshToken", data.refreshToken);
+      localStorage.setItem("tokenType", data.type);
+      const expirationTime = new Date().getTime() + (data.csrfTokenDuration * 1000);
+      localStorage.setItem("csrfTokenExpiredTime", expirationTime.toString());
+      resolve();
+    });
+  },
+
   isAuthenticated() {
     const csrfToken = localStorage.getItem("csrfToken");
     const csrfTokenExpiredTime = localStorage.getItem("csrfTokenExpiredTime");
@@ -16,32 +28,31 @@ export const authenticationService = {
 
   async login(email, password) {
     try {
+      console.log('Attempting login...');
       const response = await fetch(`${API_URL}/login`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json"
         },
-        credentials: "include", // Important for cookies
+        credentials: "include",
         body: JSON.stringify({ email, password }),
       });
 
       if (!response.ok) {
         const error = await response.json();
         throw new Error(error.message || "Login failed");
-      } else {
-        const data = await response.json();
-
-        // Store tokens and expiration
-        localStorage.setItem("csrfToken", data.csrfToken);
-        localStorage.setItem("refreshToken", data.refreshToken);
-        localStorage.setItem("tokenType", data.type);
-        // Set expiration time in milliseconds
-        const expirationTime = new Date().getTime() + (data.csrfTokenDuration);
-        localStorage.setItem("csrfTokenExpiredTime", expirationTime.toString() * 1000);
-
-        return data;
       }
+
+      const data = await response.json();
+      console.log('Login successful, setting up auth data...');
+      await this.setup(data);
+      
+      // Verify setup
+      const isAuth = this.isAuthenticated();
+      console.log('Auth setup complete, authenticated:', isAuth);
+      
+      return data;
     } catch (error) {
       console.error("Login error:", error);
       throw error;

@@ -9,11 +9,14 @@ export const userService = {
       const csrfToken = localStorage.getItem('csrfToken');
       const tokenType = localStorage.getItem('tokenType');
       
+      console.log('Fetching user data with token:', csrfToken?.substring(0, 10) + '...');
+      
       if (!csrfToken || !tokenType) {
         throw new Error('No authentication tokens found');
       }
 
       const response = await fetch(`${API_BASE_URL}/me`, {
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
@@ -22,18 +25,13 @@ export const userService = {
         credentials: 'include'
       });
 
-      if (response.status === 401) {
-        // Token might be expired, try to refresh
-        await authenticationService.refreshToken();
-        // Retry the request with new token
-        return this.getCurrentUser();
-      }
-
       if (!response.ok) {
-        throw new Error('Failed to fetch user data');
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Failed to fetch user data');
       }
 
       const data = await response.json();
+      console.log('User data fetched successfully');
       localStorage.setItem('userId', data.id);
       return data;
     } catch (error) {

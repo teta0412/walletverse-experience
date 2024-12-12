@@ -74,20 +74,28 @@ const Login = () => {
     setLoading(true);
     
     try {
+      console.log('Starting login process...');
       await authenticationService.login(formData.email, formData.password);
-      if (authenticationService.isAuthenticated()){
+      
+      if (authenticationService.isAuthenticated()) {
         toast.success("Login successful!");
-        navigate("/dashboard");
+        
+        // Wait for everything to be set up
+        await new Promise(resolve => setTimeout(resolve, 500));
+        
+        console.log('Redirecting to dashboard...');
+        window.location.replace('/dashboard');
       } else {
-        toast.error("Retry later...");
+        toast.error("Authentication failed. Please try again.");
       }
     } catch (error) {
-      toast.error(error.message);
-      // toast.error("Login failed! Please check your credentials.");
+      console.error('Login error:', error);
+      toast.error(error.message || "Login failed");
     } finally {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-muted p-4">

@@ -16,16 +16,27 @@ export const useDashboard = () => {
   const fetchDashboard = async () => {
     try {
       setLoading(true);
+      console.log('Starting dashboard data fetch...');
       
-      // First check if user is authenticated
+      // Check authentication
       if (!authenticationService.isAuthenticated()) {
+        console.log('Not authenticated, redirecting to login...');
         navigate('/login');
         return;
       }
 
+      // Sequential data fetching with logging
+      console.log('Fetching user data...');
       const userData = await userService.getCurrentUser();
+      console.log('User data received:', userData.id);
+
+      console.log('Fetching wallet data...');
       const walletData = await walletService.getWalletInfo(userData.id);
-      const transactionData = await transactionService.getTransactionStatistics()
+      console.log('Wallet data received');
+
+      console.log('Fetching transaction data...');
+      const transactionData = await transactionService.getTransactionStatistics();
+      console.log('Transaction data received');
       
       const dashboardData = {
         ...userData,
@@ -33,6 +44,7 @@ export const useDashboard = () => {
         ...transactionData,
       };
       
+      console.log('Dashboard data compiled successfully');
       setDashboard(dashboardData);
       setError(null);
     } catch (err) {
@@ -40,6 +52,7 @@ export const useDashboard = () => {
       setError(err.message);
       
       if (err.message.includes('authentication') || err.message.includes('401')) {
+        console.log('Authentication error detected, redirecting to login...');
         toast.error('Session expired. Please login again');
         navigate('/login');
       } else {
