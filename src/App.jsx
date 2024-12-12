@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -14,7 +15,19 @@ import ForgotPassword from "./pages/ForgotPassword";
 const queryClient = new QueryClient();
 
 const App = () => {
-  const isAuthenticated = authenticationService.isAuthenticated();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  useEffect(() => {
+    // Check authentication status
+    setIsAuthenticated(authenticationService.isAuthenticated());
+    
+    // Optional: Set up an interval to periodically check auth status
+    const interval = setInterval(() => {
+      setIsAuthenticated(authenticationService.isAuthenticated());
+    }, 1000); // Check every second
+    
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
