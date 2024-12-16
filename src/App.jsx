@@ -11,6 +11,11 @@ import OTPVerification from "@/pages/OTPVerification";
 import React from "react";
 import { authenticationService } from "./services/authenticationService";
 import ForgotPassword from "./pages/ForgotPassword";
+import AdminLayout from "./components/AdminLayout";
+import AdminDashboard from "./pages/admin/Dashboard";
+import UserManagement from "./pages/admin/UserManagement";
+import TransactionManagement from "./pages/admin/TransactionManagement";
+import ConfigurationManagement from "./pages/admin/ConfigurationManagement";
 
 const queryClient = new QueryClient();
 
@@ -70,6 +75,14 @@ const App = () => {
               path="/forgot-password"
               element={<ForgotPassword/>}
             />
+
+            {/* Admin routes - temporarily without authentication for preview */}
+            <Route path="/admin" element={<AdminLayout />}>
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<UserManagement />} />
+              <Route path="transactions" element={<TransactionManagement />} />
+              <Route path="configuration" element={<ConfigurationManagement />} />
+            </Route>
 
             {/* Protected routes */}
             {navItems.map(({ to, page }) => (
