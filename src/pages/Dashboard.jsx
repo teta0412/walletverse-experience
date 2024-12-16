@@ -2,9 +2,28 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { ArrowDownUp, DollarSign, Users, Activity } from "lucide-react";
 import SideNav from "@/components/SideNav";
-
+import { useDashboard } from "@/hooks/useDashboard";
+const formatDate = (dateString) => {
+  const date = new Date(dateString);
+  const now = new Date();
+  const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+  
+  if (diffInHours < 24) {
+    return `${diffInHours} hours ago`;
+  }
+  return date.toLocaleDateString();
+};
 const Dashboard = () => {
-  console.log(localStorage.getItem('csrfToken'));
+  const { dashboard, loading } = useDashboard();
+  if (loading) {
+    return <div className="flex min-h-screen items-center justify-center">
+      <p>Loading...</p>
+    </div>;
+  }
+  const recentSend = dashboard?.sentTransactions || [];
+  const recentReceived = dashboard?.receivedTransactions || [];
+  console.log(recentSend)
+  console.log(recentReceived);
   return (
     <div className="flex min-h-screen">
       <SideNav />
@@ -12,12 +31,11 @@ const Dashboard = () => {
         <div className="max-w-7xl mx-auto space-y-8">
           <div className="flex items-center gap-4">
             <Avatar className="h-16 w-16">
-              <AvatarImage src="/placeholder.svg" />
-              <AvatarFallback>NA</AvatarFallback>
+              <AvatarFallback>{dashboard?.name?.charAt(0) || "U"}</AvatarFallback>
             </Avatar>
             <div>
-              <h1 className="text-2xl font-bold">Welcome, Nguyen Van A</h1>
-              <p className="text-muted-foreground">Here's your wallet overview</p>
+              <h1 className="text-2xl font-bold">Welcome, {dashboard?.firstName + ' ' + dashboard?.lastName || "User"}</h1>
+              <p className="text-muted-foreground">{dashboard?.email}</p>
             </div>
           </div>
 
@@ -30,10 +48,10 @@ const Dashboard = () => {
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">$45,231.89</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-2xl font-bold">${dashboard?.data.balance}</div>
+                {/* <p className="text-xs text-muted-foreground">
                   +20.1% from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
             <Card className="glass-card card-hover">
@@ -44,10 +62,10 @@ const Dashboard = () => {
                 <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">+$12,234</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-2xl font-bold">+${dashboard?.weeklyDeposits || 0}</div>
+                {/* <p className="text-xs text-muted-foreground">
                   +19% from last week
-                </p>
+                </p> */}
               </CardContent>
             </Card>
             <Card className="glass-card card-hover">
@@ -58,10 +76,10 @@ const Dashboard = () => {
                 <Users className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">-$5,677</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-2xl font-bold">-${dashboard?.weeklyWithdrawals || 0}</div>
+                {/* <p className="text-xs text-muted-foreground">
                   -4% from last week
-                </p>
+                </p> */}
               </CardContent>
             </Card>
             <Card className="glass-card card-hover">
@@ -72,10 +90,10 @@ const Dashboard = () => {
                 <Activity className="h-4 w-4 text-muted-foreground" />
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">432</div>
-                <p className="text-xs text-muted-foreground">
+                <div className="text-2xl font-bold">{dashboard?.totalTransactions || 0}</div>
+                {/* <p className="text-xs text-muted-foreground">
                   +7% from last month
-                </p>
+                </p> */}
               </CardContent>
             </Card>
           </div>
@@ -87,26 +105,26 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {[1, 2, 3].map((i) => (
+                  {recentSend.map((transaction) => (
                     <div
-                      key={i}
+                      key={transaction.transactionId}
                       className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg transition-colors"
                     >
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback>U{i}</AvatarFallback>
+                          <AvatarFallback>U</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium">User {i}</p>
+                          <p className="text-sm font-medium">Transaction</p>
                           <p className="text-xs text-muted-foreground">
-                            Transaction #{i}23456
+                            {transaction.transactionId}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium text-error">-$100.00</p>
+                        <p className="text-sm font-medium text-error">-${transaction.amount}</p>
                         <p className="text-xs text-muted-foreground">
-                          2 hours ago
+                        {formatDate(transaction.createdAt)}
                         </p>
                       </div>
                     </div>
@@ -121,26 +139,26 @@ const Dashboard = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2">
-                  {[1, 2, 3].map((i) => (
+                  {recentReceived.map((transaction) => (
                     <div
-                      key={i}
+                      key={transaction.transactionId}
                       className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-lg transition-colors"
                     >
                       <div className="flex items-center gap-2">
                         <Avatar className="h-8 w-8">
-                          <AvatarFallback>U{i}</AvatarFallback>
+                          <AvatarFallback>U</AvatarFallback>
                         </Avatar>
                         <div>
-                          <p className="text-sm font-medium">User {i}</p>
+                          <p className="text-sm font-medium">Transaction</p>
                           <p className="text-xs text-muted-foreground">
-                            Transaction #{i}98765
+                            {transaction.transactionId}
                           </p>
                         </div>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium text-success">+$250.00</p>
+                        <p className="text-sm font-medium text-success">+${transaction.amount}</p>
                         <p className="text-xs text-muted-foreground">
-                          5 hours ago
+                          {formatDate(transaction.createdAt)}
                         </p>
                       </div>
                     </div>

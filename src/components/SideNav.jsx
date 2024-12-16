@@ -7,23 +7,32 @@ import { toast } from "sonner";
 import { useState } from "react";
 import UserProfileDialog from "./UserProfileDialog";
 import { authenticationService } from "@/services/authenticationService";
+import { useUser } from "@/hooks/useUser";
 
 const SideNav = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const [showProfile, setShowProfile] = useState(false);
-  
+  const { user, loading } = useUser();
+
   const handleLogout = () => {
     authenticationService.logout();
-    toast.success("Logged out successfully");
-    navigate("/login");
+    // Force a clean reload to reset all React states
+    window.location.href = "/login";
   };
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    );
+  }
 
-  const navLinks = navItems.filter(item => item.showInNav);
+  const navLinks = navItems.filter((item) => item.showInNav);
   return (
     <div className="fixed h-screen w-64 bg-card border-r flex flex-col">
       <div className="p-4 border-b">
-        <div 
+        <div
           className="flex items-center gap-3 cursor-pointer hover:opacity-80 transition-opacity"
           onClick={() => setShowProfile(true)}
         >
@@ -32,7 +41,9 @@ const SideNav = () => {
             <AvatarFallback>NA</AvatarFallback>
           </Avatar>
           <div>
-            <h3 className="font-medium">Nguyen Van A</h3>
+            <h3 className="font-medium">
+              {user?.firstName + " " + user?.lastName || "User"}
+            </h3>
             <p className="text-sm text-muted-foreground">User</p>
           </div>
         </div>
@@ -64,10 +75,7 @@ const SideNav = () => {
           Logout
         </Button>
       </div>
-      <UserProfileDialog 
-        open={showProfile} 
-        onOpenChange={setShowProfile}
-      />
+      <UserProfileDialog open={showProfile} onOpenChange={setShowProfile} />
     </div>
   );
 };

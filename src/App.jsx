@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
@@ -6,13 +7,27 @@ import { navItems } from "./nav-items";
 import ProtectedRoute from "@/components/ProtectedRoute";
 import Login from "@/pages/Login";
 import Register from "@/pages/Register";
+import OTPVerification from "@/pages/OTPVerification";
 import React from "react";
 import { authenticationService } from "./services/authenticationService";
+import ForgotPassword from "./pages/ForgotPassword";
 
 const queryClient = new QueryClient();
 
 const App = () => {
-  const isAuthenticated = authenticationService.isAuthenticated();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  
+  useEffect(() => {
+    // Check authentication status
+    setIsAuthenticated(authenticationService.isAuthenticated());
+    
+    // Optional: Set up an interval to periodically check auth status
+    const interval = setInterval(() => {
+      setIsAuthenticated(authenticationService.isAuthenticated());
+    }, 1000); // Check every second
+    
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
@@ -25,7 +40,7 @@ const App = () => {
               path="/login"
               element={
                 isAuthenticated ? (
-                  <Navigate to="/" replace />
+                  <Navigate to="/dashboard" replace />
                 ) : (
                   <Login />
                 )
@@ -35,11 +50,25 @@ const App = () => {
               path="/register"
               element={
                 isAuthenticated ? (
-                  <Navigate to="/" replace />
+                  <Navigate to="/dashboard" replace />
                 ) : (
                   <Register />
                 )
               }
+            />
+            <Route
+              path="/verify-otp"
+              element={
+                isAuthenticated ? (
+                  <Navigate to="/dashboard" replace />
+                ) : (
+                  <OTPVerification />
+                )
+              }
+            />
+            <Route 
+              path="/forgot-password"
+              element={<ForgotPassword/>}
             />
 
             {/* Protected routes */}
@@ -52,7 +81,7 @@ const App = () => {
             ))}
 
             {/* Catch-all route */}
-            <Route path="*" element={<Navigate to="/" replace />} />
+            <Route path="*" element={<Navigate to="/login" replace />} />
           </Routes>
         </BrowserRouter>
       </TooltipProvider>
